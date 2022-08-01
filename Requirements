@@ -9,3 +9,18 @@ line 76, 114, 139, 404, 689 of Qrpay.py - "email": from which email you want to 
                                           "password": of your email ( create app password from gmail management and enter that)
                       
 line 78, 119, 88, 124, 141, 146, 406, 416, 691, 697  of Qrpay.py - "email": from which email you want to send mail
+#--------------------------#
+Add this rule on firebase:
+
+{
+  "rules": {
+    ".read": true,
+    ".write": true,
+      "Employ":{
+      	".indexOn":["email","upi","contact","f_name","shop"]
+      },
+      "Payment details":{
+        ".indexOn":["email","amount","customer","customer_phone","date","payment","reference","upi"]
+      }
+  }
+}
