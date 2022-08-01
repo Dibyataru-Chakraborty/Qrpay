@@ -2,3 +2,9 @@ pip install PyQt5
 pip install Pyrebase4
 pip install qrcode
 pip install python-resize-image
+#--------------------------#
+
+line 76, 114, 139, 404, 689 of Qrpay.py - "email": from which email you want to send mail , 
+                                          "password": of your email ( create app password from gmail management and enter that)
+                      
+line 78, 119, 88, 124, 141, 146, 406, 416, 691, 697  of Qrpay.py - "email": from which email you want to send mail
