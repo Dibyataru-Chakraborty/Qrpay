@@ -1,0 +1,4 @@
+#pip install PyQt5
+#pip install Pyrebase4
+#pip install qrcode
+#pip install python-resize-image
