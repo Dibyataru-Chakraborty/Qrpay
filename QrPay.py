@@ -1,3 +1,7 @@
+#------------------
+# See Requirements
+
+
 import csv
 import json
 import sys
@@ -15,15 +19,16 @@ from welcome import Ui_Form
 import qrcode
 from resizeimage import resizeimage
 
+#Enter Your Firebase details
 firebaseConfig = {
-                                'apiKey': "AIzaSyCqntlLd-y0lGiwAxMaNOL2ot__v_eYtCs",
-                                'authDomain': "qrpay-69991.firebaseapp.com",
-                                'database_url' : "https://qrpay-69991-default-rtdb.firebaseio.com/",
-                                'projectId': "qrpay-69991",
-                                'storageBucket': "qrpay-69991.appspot.com",
-                                'messagingSenderId': "71990280295",
-                                'appId': "1:71990280295:web:74122ee684e0589bb414c2",
-                                'measurementId': "G-WSRZQH387F"
+                                'apiKey': "#",
+                                'authDomain': "#",
+                                'database_url' : "#",
+                                'projectId': "#",
+                                'storageBucket': "#",
+                                'messagingSenderId': "#",
+                                'appId': "#",
+                                'measurementId': "#"
                             }
 fire = pyrebase.initialize_app(firebaseConfig)
 auth = fire.auth()
@@ -72,9 +77,9 @@ class MainWindow(QtWidgets.QWidget,Ui_Form):
                 upi = find.order_by_child("email").equal_to(email).get()
                 s = smtplib.SMTP('smtp.gmail.com', 587)           
                 s.starttls()#security           
-                s.login("qrpay.69991@gmail.com", "tnyspowtjyenwohx")#login smtp            
+                s.login("email", "password")#login smtp #See requirements           
                 msg=MIMEMultipart()#message
-                msg['From'] = "noreply@qrpay.com"
+                msg['From'] = "email"  #See requirements 
                 msg['To'] = email
                 msg['Subject'] = "LOGIN SUCCESSFULL"
                 day = self.dateTimeEdit.dateTime().toString('MM/dd/yyyy  h:mm:ss')
@@ -84,7 +89,7 @@ class MainWindow(QtWidgets.QWidget,Ui_Form):
                     name=employe.val()['f_name']
                 message = 'Hello, '+'\n\n\t\tWe Noticed a New Login,'+name+'\n\n'+'\t\t\t\t'+day+'\n\nYou Have successfully logged in'+'\n\n\nThanks,\n\nYour QrPay team'
                 msg.attach(MIMEText(message, 'plain'))               
-                s.sendmail("noreply@qrpay.com", email, msg.as_string())
+                s.sendmail("email", email, msg.as_string()) #See requirements 
                 QMessageBox.information(self.widget_login,'Welcome','Login Successfull')
             except Exception  as es:
                 exc = es.args[1]
@@ -110,17 +115,17 @@ class MainWindow(QtWidgets.QWidget,Ui_Form):
                     self.f_resend.setEnabled(False)
                     s = smtplib.SMTP('smtp.gmail.com', 587)
                     s.starttls()# start TLS for security
-                    s.login("qrpay.69991@gmail.com", "tnyspowtjyenwohx")# Authentication
+                    s.login("email", "password")# Authentication  #See requirements
                     #-- otp
                     ad_ans = lcase+ucase+number+symbol
                     self.otp = "".join(random.sample(ad_ans,otp_lenght))
                     msg=MIMEMultipart()
-                    msg['From'] = "noreply@qrpay.com"
+                    msg['From'] = "email" #See requirements
                     msg['To'] = email
                     msg['Subject'] = "Password Reset For QrPay"
                     message = 'Hello '+',\n\nYour otp is '+str(self.otp)+'\nThanks,\n\nYour QrPay team'# add in the message body
                     msg.attach(MIMEText(message, 'plain'))
-                    s.sendmail("noreply@qrpay.com", email, msg.as_string())# sending the mail'''
+                    s.sendmail("email", email, msg.as_string())# sending the mail''' #See requirements
                     QMessageBox.information(self.widget_forget,"OTP","OTP has been sent to your Email")  
                     self.f_otp.setText('')         
                 else:
@@ -135,14 +140,14 @@ class MainWindow(QtWidgets.QWidget,Ui_Form):
         email = self.l_email.text()
         s = smtplib.SMTP('smtp.gmail.com', 587)
         s.starttls()# start TLS for security    
-        s.login("qrpay.69991@gmail.com", "tnyspowtjyenwohx")# Authentication               
+        s.login("email", "password")# Authentication      #See requirements       
         msg=MIMEMultipart()
-        msg['From'] = "noreply@qrpay.com"
+        msg['From'] = "email" #See requirements
         msg['To'] = email
         msg['Subject'] = "Password Reset Otp For QrPay"        
         message = 'Hello '+',\n\nYour otp is '+str(self.re_otp)+'\nThanks,\n\nYour QrPay team'# add in the message body
         msg.attach(MIMEText(message, 'plain'))
-        s.sendmail("noreply@qrpay.com", email, msg.as_string())# sending the mail
+        s.sendmail("email", email, msg.as_string())# sending the mail #See requirements
         QMessageBox.information(self.widget_forget,"OTP","OTP has been sent to your Email")
         self.f_otp.setText('')
 
@@ -400,9 +405,9 @@ class MainWindow(QtWidgets.QWidget,Ui_Form):
         else:
             s = smtplib.SMTP('smtp.gmail.com', 587)           
             s.starttls()#security           
-            s.login("qrpay.69991@gmail.com", "tnyspowtjyenwohx")#login smtp            
+            s.login("email", "password")#login smtp    #See requirements         
             msg=MIMEMultipart()#message
-            msg['From'] = "noreply@qrpay.com"
+            msg['From'] = "email" #See requirements       
             msg['To'] = self.email
             msg['Subject'] = "REGISTRATION SUCCESSFULL"
             message = 'Hello '+',\n\nYour Email id is : '+self.email+' and your password is : '+self.password+'\nThanks,\n\nYour QrPay team'
@@ -412,7 +417,7 @@ class MainWindow(QtWidgets.QWidget,Ui_Form):
             emai = self.email.removesuffix('@gmail.com')
             db.child('Employ').child(emai).set(data)
             auth.send_email_verification(create['idToken'])
-            s.sendmail("noreply@qrpay.com", self.email, msg.as_string())
+            s.sendmail("email", self.email, msg.as_string()) #See requirements       
             self.login()
             QMessageBox.information(self.widget_login,"Success","Register Successfull")
             
@@ -685,15 +690,15 @@ class MainWindow(QtWidgets.QWidget,Ui_Form):
         self.profile_shop_phone.setReadOnly(True)
         s = smtplib.SMTP('smtp.gmail.com', 587)           
         s.starttls()#security           
-        s.login("qrpay.69991@gmail.com", "tnyspowtjyenwohx")#login smtp            
+        s.login("email", "password")#login smtp    #See Requirements        
         msg=MIMEMultipart()#message
-        msg['From'] = "noreply@qrpay.com"
+        msg['From'] = "email" #See Requirements
         msg['To'] = email
         msg['Subject'] = "UPDATE ACCOUNT"
         day = self.dateTimeEdit.dateTime().toString('MM/dd/yyyy  h:mm:ss')
         message = 'Hello, '+'\n\n\t\tWe Noticed a New Login,\t at '+day+'\n\nYou HAVE UPDATE YOUR ACCOUNT ''\n\n\nThanks,\n\nYour QrPay team'
         msg.attach(MIMEText(message, 'plain'))               
-        s.sendmail("noreply@qrpay.com", email, msg.as_string())
+        s.sendmail("email", email, msg.as_string()) #See Requirements
         QMessageBox.information(self.q_widget_profile,"Update","Your Account successfully update")
         self.profile_close()
         QMessageBox.information(self.widget_qrpay,"Warning","Please logout to get update of your Account")
