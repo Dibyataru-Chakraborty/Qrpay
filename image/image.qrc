@@ -1,0 +1,7 @@
+<RCC>
+  <qresource prefix="newPrefix">
+    <file>Qr.png</file>
+    <file>abstract_background_with_grunge_brush_stroke_and_black_border_1401.png</file>
+    <file>Free_Sample_By_Wix.png</file>
+  </qresource>
+</RCC>
