@@ -10,6 +10,7 @@
 
 ### :man_technologist: About This :
 - This is suitable only for Windows 10, 11 :computer: :desktop_computer:
+- This is Payment Software for all small retailers
 
 ### :hammer_and_wrench: Languages and Tools Used:
 
