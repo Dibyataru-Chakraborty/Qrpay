@@ -13,10 +13,8 @@
 <p>
 
 #### Download From Here
-
-```ruby
-   puts "Hello World"
-```
+  
+  <a href='https://mega.nz/file/PdAkyawL#ZYMTJxwck13qLGDiMDbhtDkKcxkDBmNzYb4Qq691It0'><h3>```QrPay```</h3></a>
 
 </p>
 </details>
