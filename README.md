@@ -1,6 +1,6 @@
 <div id="header" align="center">
   <h1>
-  # Qrpay</br>
+  Qrpay</br>
   Payment Software for retailer
   <h1>
   <img src="https://media.giphy.com/media/vhVqGkxDYxAaRbOWVp/giphy.gif" width="150"/>
