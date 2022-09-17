@@ -4,20 +4,23 @@
 
 import csv
 import json
-import sys
-from PyQt5 import QtWidgets,QtCore
-from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import*
-from PyQt5 import QtWidgets
-import pyrebase
-import math
 import random
+import re
 import smtplib
-from email.mime.text import MIMEText
+import sys
+from datetime import datetime
 from email.mime.multipart import MIMEMultipart
-from welcome import Ui_Form
+from email.mime.text import MIMEText
+
+import pyrebase
 import qrcode
+import requests
+from PyQt5 import QtCore, QtWidgets
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtWidgets import *
 from resizeimage import resizeimage
+
+from welcome import Ui_Form
 
 #Enter Your Firebase details
 firebaseConfig = {
@@ -34,11 +37,20 @@ fire = pyrebase.initialize_app(firebaseConfig)
 auth = fire.auth()
 db = fire.database()
 
+#---otp
 lcase="abcdefghijklmnopqrstuvwxyz"
 ucase="ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 number="0123456789"
 symbol="@#"
 otp_lenght = 6
+transaction = 16
+
+#pincode
+api = "https://api.postalpincode.in/pincode/"
+
+regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+
+date_time=datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
 
 class MainWindow(QtWidgets.QWidget,Ui_Form):
