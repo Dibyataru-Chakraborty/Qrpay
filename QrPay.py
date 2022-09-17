@@ -1,7 +1,3 @@
-#------------------
-# See Requirements
-
-
 import csv
 import json
 import random
@@ -22,7 +18,6 @@ from resizeimage import resizeimage
 
 from welcome import Ui_Form
 
-#Enter Your Firebase details
 firebaseConfig = {
                                 'apiKey': "#",
                                 'authDomain': "#",
@@ -80,28 +75,27 @@ class MainWindow(QtWidgets.QWidget,Ui_Form):
             QMessageBox.warning(self.widget_login,'Warning','All Fields Are Rquired')
         else:
             try:
-                #fire = pyrebase.initialize_app(firebaseConfig)
                 email = self.l_email.text()
                 password =  self.l_password.text()
                 auth.sign_in_with_email_and_password(email, password)
-                self.qrpay()
                 find = db.child('Employ')
-                upi = find.order_by_child("email").equal_to(email).get()
+                user = find.order_by_child("email").equal_to(email).get()
                 s = smtplib.SMTP('smtp.gmail.com', 587)           
                 s.starttls()#security           
-                s.login("email", "password")#login smtp #See requirements           
+                s.login("email", "password") #see requirement #login smtp          
                 msg=MIMEMultipart()#message
-                msg['From'] = "email"  #See requirements 
+                msg['From'] = "noreply@qrpay.com"
                 msg['To'] = email
                 msg['Subject'] = "LOGIN SUCCESSFULL"
-                day = self.dateTimeEdit.dateTime().toString('MM/dd/yyyy  h:mm:ss')
-                for employe in upi.each():
-                    up_i = employe.val()['upi']
-                    self.q_upi.setText(up_i)
-                    name=employe.val()['f_name']
-                message = 'Hello, '+'\n\n\t\tWe Noticed a New Login,'+name+'\n\n'+'\t\t\t\t'+day+'\n\nYou Have successfully logged in'+'\n\n\nThanks,\n\nYour QrPay team'
+                day = date_time
+                for employe in user.each():
+                    s_upi = employe.val()['upi']
+                    s_wo_name = employe.val()['f_name']
+                self.q_upi.setText(s_upi)
+                message = 'Hello, '+'\n\n\t\tWe Noticed a New Login,'+s_wo_name+'\n\n'+'\t\t\t\t'+day+'\n\nYou Have successfully logged in'+'\n\n\nThanks,\n\nYour QrPay team'
                 msg.attach(MIMEText(message, 'plain'))               
-                s.sendmail("email", email, msg.as_string()) #See requirements 
+                s.sendmail("noreply@qrpay.com", email, msg.as_string())
+                self.qrpay()
                 QMessageBox.information(self.widget_login,'Welcome','Login Successfull')
             except Exception  as es:
                 exc = es.args[1]
@@ -127,17 +121,17 @@ class MainWindow(QtWidgets.QWidget,Ui_Form):
                     self.f_resend.setEnabled(False)
                     s = smtplib.SMTP('smtp.gmail.com', 587)
                     s.starttls()# start TLS for security
-                    s.login("email", "password")# Authentication  #See requirements
+                    s.login("email", "password") #see requirement # Authentication
                     #-- otp
                     ad_ans = lcase+ucase+number+symbol
                     self.otp = "".join(random.sample(ad_ans,otp_lenght))
                     msg=MIMEMultipart()
-                    msg['From'] = "email" #See requirements
+                    msg['From'] = "noreply@qrpay.com"
                     msg['To'] = email
                     msg['Subject'] = "Password Reset For QrPay"
                     message = 'Hello '+',\n\nYour otp is '+str(self.otp)+'\nThanks,\n\nYour QrPay team'# add in the message body
                     msg.attach(MIMEText(message, 'plain'))
-                    s.sendmail("email", email, msg.as_string())# sending the mail''' #See requirements
+                    s.sendmail("noreply@qrpay.com", email, msg.as_string())# sending the mail'''
                     QMessageBox.information(self.widget_forget,"OTP","OTP has been sent to your Email")  
                     self.f_otp.setText('')         
                 else:
@@ -152,14 +146,14 @@ class MainWindow(QtWidgets.QWidget,Ui_Form):
         email = self.l_email.text()
         s = smtplib.SMTP('smtp.gmail.com', 587)
         s.starttls()# start TLS for security    
-        s.login("email", "password")# Authentication      #See requirements       
+        s.login("email", "password") #see requirement # Authentication               
         msg=MIMEMultipart()
-        msg['From'] = "email" #See requirements
+        msg['From'] = "noreply@qrpay.com"
         msg['To'] = email
         msg['Subject'] = "Password Reset Otp For QrPay"        
         message = 'Hello '+',\n\nYour otp is '+str(self.re_otp)+'\nThanks,\n\nYour QrPay team'# add in the message body
         msg.attach(MIMEText(message, 'plain'))
-        s.sendmail("email", email, msg.as_string())# sending the mail #See requirements
+        s.sendmail("noreply@qrpay.com", email, msg.as_string())# sending the mail
         QMessageBox.information(self.widget_forget,"OTP","OTP has been sent to your Email")
         self.f_otp.setText('')
 
@@ -216,8 +210,11 @@ class MainWindow(QtWidgets.QWidget,Ui_Form):
             self.q_p_widget.show()
             self.q_widget_profile.hide()
             self.q_qr_widget.show()
-            qr_data=('upi://pay?pa=')+str(self.q_upi.text())+('&mode=02&am=')+str(self.q_amount.text())
+            ad_tran = lcase+ucase+number
+            ref = "".join(random.sample(ad_tran,transaction))
+            qr_data=('upi://pay?pa=')+str(self.q_upi.text())+('&mode=02&am=')+str(self.q_amount.text())+('&tr=')+str(ref)
             qr_code=qrcode.make(qr_data)
+            self.q_reference.setText(ref)
             qr_code=resizeimage.resize_cover(qr_code,[171,151])
             qr_code.save("Customer/Code/Customer "+str(self.q_customer_name.text())+'.png')
             self.im=QPixmap("Customer/Code/Customer "+str(self.q_customer_name.text())+'.png')
@@ -279,7 +276,7 @@ class MainWindow(QtWidgets.QWidget,Ui_Form):
             c_phone = self.q_customer_Phone.text()
             c_amount = self.q_amount.text()
             c_reference = self.q_reference.text()
-            day = self.dateTimeEdit.dateTime().toString('MM/dd/yyyy  h:mm:ss')
+            day = date_time
             product = (self.q_p_1pn.text()+'    '+self.q_p_2pn.text()+'     '+self.q_p_3pn.text()+'     '+self.q_p_4pn.text()+'     '+self.q_p_5pn.text()+'     '+self.q_p_6pn.text()+'     '+self.q_p_7pn.text()+'     '+self.q_p_8pn.text()+'        '+self.q_p_9pn.text()+'      '+self.q_p_10pn.text()+'        '+self.q_p_11pn.text()+'        '+self.q_p_12pn.text())
             payment_firebase = db.child('Payment details')
 
@@ -372,17 +369,14 @@ class MainWindow(QtWidgets.QWidget,Ui_Form):
             QMessageBox.warning(self.widget_register,"Error","Password should be minimum 8 Letter")
         else:
             try:
-                if self.email.endswith('@gmail.com'): 
+                if (re.fullmatch(regex, self.email)): 
                     find = db.child('Employ')
-                    emai = self.email.removesuffix('@gmail.com')
+                    a=self.email
+                    b=len(a)
+                    d=a.index('@')
+                    c=a[d:b:]
+                    emai = self.email.removesuffix(c)
                     if find.order_by_key().equal_to(emai).get().val():
-                        self.widget_welcome.hide()
-                        self.widget_register.show()
-                        self.frame.show()
-                        self.widget_register_details.hide()
-                        self.widget_login.hide()
-                        self.widget_forget.hide()
-                        self.widget_qrpay.hide()
                         QMessageBox.warning(self.widget_register,'Warning','Email Already Exist')
                     else:
                         self.widget_welcome.hide()
@@ -393,7 +387,6 @@ class MainWindow(QtWidgets.QWidget,Ui_Form):
                         self.widget_login.hide()
                         self.widget_forget.hide()
                         self.r_email.setText(self.email)
-                        self.r_password.setText(self.password)
                         QMessageBox.information(self.widget_register_details,'Welcome','Please Register your details to continue')
                 else:
                     QMessageBox.warning(self.widget_register,'Warning','Invalid Email')                    
@@ -406,33 +399,55 @@ class MainWindow(QtWidgets.QWidget,Ui_Form):
                 self.widget_login.hide()
                 self.widget_forget.hide()
                 self.r_email.setText(self.email)
-                self.r_password.setText(self.password)
                 QMessageBox.information(self.widget_register_details,'Welcome','Please Register your details to continue')
 
     def register_details(self):
-        if self.r_first_name.text()=='' or self.r_last_name.text()=='' or self.r_phone_number.text()=='' or self.r_upi.text()=='' or self.r_comboBox.currentText()=='Select' or self.r_answer.text()=='':
+        if self.r_first_name.text()=='' or self.r_last_name.text()=='' or self.r_phone_number.text()=='' or self.r_upi.text()=='' or self.r_pincode.text()=='' or self.textEdit.toPlainText()=='' or self.r_postoffice.currentText()=='':
             QMessageBox.warning(self.widget_register_details,"Error","All Fields Are Rquired")
         elif "@" not in self.r_upi.text():
             QMessageBox.warning(self.widget_register_details,"Error","Enter valid upi")
         else:
             s = smtplib.SMTP('smtp.gmail.com', 587)           
             s.starttls()#security           
-            s.login("email", "password")#login smtp    #See requirements         
+            s.login("email", "password") #see requirement #login smtp   
             msg=MIMEMultipart()#message
-            msg['From'] = "email" #See requirements       
+            msg['From'] = "noreply@qrpay.com"
             msg['To'] = self.email
             msg['Subject'] = "REGISTRATION SUCCESSFULL"
             message = 'Hello '+',\n\nYour Email id is : '+self.email+' and your password is : '+self.password+'\nThanks,\n\nYour QrPay team'
             msg.attach(MIMEText(message, 'plain'))
             create = auth.create_user_with_email_and_password(self.email,self.password)
-            data = ({'email' : self.email, 'f_name' : self.r_first_name.text(), 'shop' : self.r_last_name.text(), 'contact' : self.r_phone_number.text(),'upi' : self.r_upi.text(), 'securityqu' : self.r_comboBox.currentText(), 'securityans' : self.r_answer.text()})
-            emai = self.email.removesuffix('@gmail.com')
+            data = ({'email' : self.email, 'f_name' : self.r_first_name.text(), 'shop' : self.r_last_name.text(), 'contact' : self.r_phone_number.text(),'upi' : self.r_upi.text(), 'pincode' : self.r_pincode.text(), 'address' : self.textEdit.toPlainText(),  'state' : self.r_state.text(), 'district' : self.r_district.text(), 'postoffice' : self.r_postoffice.currentText()})
+            a=self.email
+            b=len(a)
+            d=a.index('@')
+            c=a[d:b:]
+            emai = self.email.removesuffix(c)
             db.child('Employ').child(emai).set(data)
             auth.send_email_verification(create['idToken'])
-            s.sendmail("email", self.email, msg.as_string()) #See requirements       
+            s.sendmail("noreply@qrpay.com", self.email, msg.as_string())
             self.login()
             QMessageBox.information(self.widget_login,"Success","Register Successfull")
-            
+
+    def pincode(self):
+        if self.r_pincode.text() == '':
+            self.r_state.setText('')
+            self.r_district.setText('')
+            self.r_postoffice.clear()
+            QMessageBox.warning(self.widget_register_details,'Warning','Enter correct pincode')
+        else:
+            try:
+                self.r_postoffice.clear()
+                pincode = self.r_pincode.text()
+                code = requests.get(api+pincode)
+                info = json.loads(code.text)[0]['PostOffice']
+                for i in info:
+                    self.r_state.setText(i['State'])
+                    self.r_district.setText(i['District'])
+                    a=i["Name"]
+                    self.r_postoffice.addItem(a)
+            except:
+                QMessageBox.warning(self.widget_register_details,'Error',"Invalid Pincode")         
     #---------welcome
     def welcome(self):
         self.widget_welcome.show()
@@ -456,24 +471,34 @@ class MainWindow(QtWidgets.QWidget,Ui_Form):
     def account(self):
         email = self.l_email.text()
         find = db.child('Employ')
-        upi = find.order_by_child("email").equal_to(email).get()
-        for employe in upi.each():
+        user = find.order_by_child("email").equal_to(email).get()
+        day = date_time
+        for employe in user.each():
             s_shop = employe.val()['shop']
             s_email = employe.val()['email']
             s_phone = employe.val()['contact']
             s_upi = employe.val()['upi']
             s_wo_name = employe.val()['f_name']
-            self.profile_shop_name.setText(s_shop)
-            self.profile_shop_email.setText(s_email)
-            self.profile_shop_phone.setText(s_phone)
-            self.profile_shop_upi.setText(s_upi)
-            self.profile_shop_wo_name.setText(s_wo_name)
+            s_pincode = employe.val()['pincode']
+            s_address = employe.val()['address']
+            s_state =employe.val()['state']
+            s_district = employe.val()['district']
+            s_postoffice = employe.val()['postoffice']
+        self.profile_shop_name.setText(s_shop)
+        self.profile_shop_email.setText(s_email)
+        self.profile_shop_phone_number.setText(s_phone)
+        self.profile_shop_upi.setText(s_upi)
+        self.profile_shop_owner.setText(s_wo_name)
+        self.profile_shop_pincode.setText(s_pincode)
+        self.profile_shop__addres.setText(s_address)
+        self.profile_shop_state.setText(s_state)
+        self.profile_shop_district.setText(s_district)
+        self.profile_shop_post_office.setText(s_postoffice)
         self.profile_save.setEnabled(False)
         self.q_widget_profile.show()
         self.q_c_widget.hide()           
         self.q_p_widget.hide()
         self.q_qr_widget.hide()
-        self.dateTimeEdit.hide()
         self.line.hide()
         self.line_2.hide()
         self.pushButton.hide()
@@ -497,7 +522,7 @@ class MainWindow(QtWidgets.QWidget,Ui_Form):
         self.q_c_widget.hide()           
         self.q_p_widget.show()
         self.q_qr_widget.hide()
-        self.dateTimeEdit.show()
+        
         self.line.show()
         self.line_2.show()
         self.pushButton.show()
@@ -523,7 +548,7 @@ class MainWindow(QtWidgets.QWidget,Ui_Form):
         self.q_c_widget.hide()           
         self.q_p_widget.hide()
         self.q_qr_widget.hide()
-        self.dateTimeEdit.hide()
+
         self.line.hide()
         self.line_2.hide()
         self.pushButton.hide()
@@ -546,7 +571,7 @@ class MainWindow(QtWidgets.QWidget,Ui_Form):
     def close_history(self):
         self.widget_history.hide()          
         self.q_p_widget.show()
-        self.dateTimeEdit.show()
+        
         self.line.show()
         self.line_2.show()
         self.pushButton.show()
@@ -599,7 +624,7 @@ class MainWindow(QtWidgets.QWidget,Ui_Form):
         self.q_c_widget.hide()           
         self.q_p_widget.hide()
         self.q_qr_widget.hide()
-        self.dateTimeEdit.hide()
+
         self.line.hide()
         self.line_2.hide()
         self.pushButton.hide()
@@ -661,7 +686,7 @@ class MainWindow(QtWidgets.QWidget,Ui_Form):
         row+=1
         self.widget_search.hide()         
         self.q_p_widget.show()
-        self.dateTimeEdit.show()
+        
         self.line.show()
         self.line_2.show()
         self.pushButton.show()
@@ -681,11 +706,11 @@ class MainWindow(QtWidgets.QWidget,Ui_Form):
         self.q_upi.show()
 
     def upi_update(self):
-        QMessageBox.information(self.q_widget_profile,"Update","You Can Update Your Name, Shop Name, UPI, Phone Number only")
+        QMessageBox.information(self.q_widget_profile,"Update","You Can Update Your Details")
         self.profile_shop_upi.setReadOnly(False)
-        self.profile_shop_wo_name.setReadOnly(False)
+        self.profile_shop_owner.setReadOnly(False)
         self.profile_shop_name.setReadOnly(False)
-        self.profile_shop_phone.setReadOnly(False)
+        self.profile_shop_phone_number.setReadOnly(False)
         self.profile_save.setEnabled(True)
 
     def upi_save(self):
@@ -702,15 +727,15 @@ class MainWindow(QtWidgets.QWidget,Ui_Form):
         self.profile_shop_phone.setReadOnly(True)
         s = smtplib.SMTP('smtp.gmail.com', 587)           
         s.starttls()#security           
-        s.login("email", "password")#login smtp    #See Requirements        
+        s.login("email", "password") #see requirement #login smtp       
         msg=MIMEMultipart()#message
-        msg['From'] = "email" #See Requirements
+        msg['From'] = "noreply@qrpay.com"
         msg['To'] = email
         msg['Subject'] = "UPDATE ACCOUNT"
-        day = self.dateTimeEdit.dateTime().toString('MM/dd/yyyy  h:mm:ss')
+        day = date_time
         message = 'Hello, '+'\n\n\t\tWe Noticed a New Login,\t at '+day+'\n\nYou HAVE UPDATE YOUR ACCOUNT ''\n\n\nThanks,\n\nYour QrPay team'
         msg.attach(MIMEText(message, 'plain'))               
-        s.sendmail("email", email, msg.as_string()) #See Requirements
+        s.sendmail("noreply@qrpay.com", email, msg.as_string())
         QMessageBox.information(self.q_widget_profile,"Update","Your Account successfully update")
         self.profile_close()
         QMessageBox.information(self.widget_qrpay,"Warning","Please logout to get update of your Account")
@@ -762,6 +787,7 @@ class MainWindow(QtWidgets.QWidget,Ui_Form):
         self.s_back.clicked.connect(self.welcome)
         self.r_register.clicked.connect(self.register_details)
         self.r_back.clicked.connect(self.register)
+        self.r_pincode_search.clicked.connect(self.pincode)
 
         self.q_old_details.clicked.connect(self.history_details)
         self.history_close.clicked.connect(self.close_history)
@@ -802,4 +828,3 @@ if __name__ == '__main__':
     ui = MainWindow()
     ui.show()
     sys.exit(app.exec_())
-
